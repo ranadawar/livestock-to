@@ -28,7 +28,7 @@ const FeedListingCard = ({
         </View> */}
       </View>
       <StripeProvider
-          publishableKey="pk_test_51IdYnDBHMKBszX1pBFaa67mnlpgrqh7Dw839OaPD429x69Ss3jdSEutSjOQdRmatWmdpGzYgD1TsVct4Y57tScap00kD1Hxezb"
+          publishableKey=""
           urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
         >
           <PaymentScreen amount={price} onPress={onPress} />
