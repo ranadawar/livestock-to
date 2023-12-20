@@ -15,7 +15,7 @@ const DairyListingCard = ({
       <View style={styles.middleContainer}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.price}>{price}</Text>
-        <View style={styles.ownerContainer}>
+        {/* <View style={styles.ownerContainer}>
           <Text style={styles.normal}>Listed By:</Text>
           <Text
             onPress={() => navigation.navigte("sListingOwner")}
@@ -23,7 +23,7 @@ const DairyListingCard = ({
           >
             {owner}
           </Text>
-        </View>
+        </View> */}
       </View>
       {!hide && (
         <TouchableOpacity style={styles.buyNow}>

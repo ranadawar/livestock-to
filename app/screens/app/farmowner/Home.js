@@ -9,38 +9,49 @@ import AppScreen from "../../../components/AppScreen";
 const Home = ({ navigation }) => {
   return (
     <AppScreen>
-      <View style={{ flex: 1, padding: 20 }}>
+      <View style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <AppHeader />
-          <Text style={styles.title}>Livestock Pro's Feed Store!</Text>
+          <Text style={styles.title}>Livestock Pro's Owner!</Text>
 
           <View style={styles.cardsContainer}>
             <CustomerHomeCard
-              title="Set Feed Store"
-              source={require("../../../../assets/icons/medicalstores.png")}
+              title="Set Owner"
+              source={require("../../../../assets/icons/entrepreneur.png")}
               mRight={10}
-              onPress={() => navigation.navigate("ssetproductstore")}
+              onPress={() => navigation.navigate("ssetowner")}
             />
-            <CustomerHomeCard
+             <CustomerHomeCard
               title="Store Products"
-              source={require("../../../../assets/icons/medicine.png")}
+              source={require("../../../../assets/icons/food.png")}
               mLeft={10}
-              onPress={() => navigation.navigate("sstoreproducts")}
+              onPress={() => navigation.navigate("saddproduct")}
+            />
+          </View>
+          
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+                title="Set Farm"
+                source={require("../../../../assets/icons/business.png")}
+                mRight={10}
+                onPress={() => navigation.navigate("ssetstore")}
+              />
+          </View>
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+              title="All Requests"
+              source={require("../../../../assets/icons/personal.png")}
+              mLeft={10}
+              onPress={() => navigation.navigate("sallproducts",{type:"Owner"})}
             />
           </View>
           <View style={styles.cardsContainer}>
             <CustomerHomeCard
-              title="All Store Products"
-              source={require("../../../../assets/icons/medicine.png")}
-              mLeft={10}
-              onPress={() => navigation.navigate("sallproduct")}
-            />
-            <CustomerHomeCard
-              title="Store Products"
-              source={require("../../../../assets/icons/medicine.png")}
-              mLeft={10}
-              onPress={() => navigation.navigate("sstoreproducts")}
-            />
+                title="Verify Products"
+                source={require("../../../../assets/icons/qrcode.png")}
+                mLeft={10}
+                onPress={() => navigation.navigate("sallproductsverify")}
+              />
           </View>
         </ScrollView>
       </View>
@@ -55,7 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 20,
-
+    marginHorizontal: 20,
     marginTop: 35,
   },
   title: {

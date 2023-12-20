@@ -5,15 +5,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS, FONTS } from "../constants/theme";
 
 const ProfileCard = ({
-  imagePerson = require("../../assets/images/vetdoc.jpg"),
+  imagePerson ,
   name = "Jonath",
   memberSince = "November 2022",
   onPress,
+  type
 }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
       <Image
-        source={imagePerson}
+        source={imagePerson ? {uri :imagePerson} : type === "Doctor" ? require("../../assets/images/vetdoc.jpg") : require("../../assets/icons/farmer.png")}
         style={styles.profilePicture}
         resizeMode="cover"
       />

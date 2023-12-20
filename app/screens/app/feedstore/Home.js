@@ -36,6 +36,14 @@ const Home = ({ navigation }) => {
               onPress={() => navigation.navigate("sallproduct")}
             />
           </View>
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+                title="Verify Products"
+                source={require("../../../../assets/icons/qrcode.png")}
+                mLeft={10}
+                onPress={() => navigation.navigate("sallproductsverify")}
+              />
+          </View>
         </ScrollView>
       </View>
     </AppScreen>

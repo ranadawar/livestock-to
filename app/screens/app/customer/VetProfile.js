@@ -3,12 +3,13 @@ import React from "react";
 import AppScreen from "../../../components/AppScreen";
 import AppHeader from "../../../components/AppHeader";
 import { COLORS, FONTS } from "../../../constants/theme";
-
 import LottieView from "lottie-react-native";
 import VetContactCard from "../../../components/vet/VetContactCard";
 
-const VetProfile = ({ navigation }) => {
+const VetProfile = ({ navigation, route }) => {
   const [loading, setLoading] = React.useState(true);
+
+  console.log(route.params.data)
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -16,17 +17,31 @@ const VetProfile = ({ navigation }) => {
     }, 1000);
   }, []);
 
+  
+
   const onPressCall = () => {
-    const url = "tel://+923000000000"; //will be replaced with vet's number
+    const url = `tel:${route.params.data.contact}`; //will be replaced with vet's number
     Linking.openURL(url);
   };
   const onPressEmail = () => {
-    const url = "mailto:ahsan@gmail.com"; // will be replaced with vet's email
+    
+    const url = `mailto:${route.params.data.email}`; // will be replaced with vet's email
     Linking.openURL(url);
-  };
+    };
 
   const onPressChat = () => {
-    navigation.navigate("svetchat");
+    navigation.navigate("svetchat",{uid:route.params.data.uid});
+  };
+
+  const initiateSkypeVideoCall = async () => {
+    const skypeURL = `skype:${route.params.data.contact}?call&video=true`;
+  
+    const supported = await Linking.canOpenURL(skypeURL);
+    if (supported) {
+      await Linking.openURL(skypeURL);
+    } else {
+      console.error('Cannot initiate Skype video call.');
+    }
   };
 
   return (
@@ -38,9 +53,9 @@ const VetProfile = ({ navigation }) => {
           <Image
             resizeMode="cover"
             style={styles.image}
-            source={require("../../../../assets/images/vetdoc.jpg")}
+            source={route.params.data.imagePerson ? route.params.data.imagePerson :  require("../../../../assets/images/vetdoc.jpg")}
           />
-          <Text style={styles.name}>Ahsan Amjad Rona</Text>
+          <Text style={styles.name}>{route.params.data.name}</Text>
 
           <View style={styles.bottomContainer}>
             <VetContactCard onPress={onPressCall} />
@@ -56,7 +71,7 @@ const VetProfile = ({ navigation }) => {
             />
             <VetContactCard
               title="Video Call Veterinary"
-              onPress={onPressCall}
+              onPress={initiateSkypeVideoCall}
               source={require("../../../../assets/icons/videocall.png")}
             />
           </View>

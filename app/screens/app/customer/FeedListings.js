@@ -4,99 +4,78 @@ import AppScreen from "../../../components/AppScreen";
 import AppHeader from "../../../components/AppHeader";
 import { COLORS, FONTS } from "../../../constants/theme";
 import FeedListingCard from "../../../components/feed/FeedListingCard";
+import * as SecureStore from 'expo-secure-store';
+import { getDatabase, ref, get, set } from "firebase/database";
 
-const dummyData = [
-  {
-    id: 1,
-    title: "Title 1",
-    description: "Description 1",
-    price: "100",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 2,
-    title: "Title 2",
-    description: "Description 2",
-    price: "200",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 3,
-    title: "Title 3",
-    description: "Description 3",
-    price: "300",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 4,
-    title: "Title 4",
-    description: "Description 4",
-    price: "400",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 5,
-    title: "Title 5",
-    description: "Description 5",
-    price: "500",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 6,
-    title: "Title 6",
-    description: "Description 6",
-    price: "600",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 7,
-    title: "Title 7",
-    description: "Description 7",
-    price: "700",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 8,
-    title: "Title 8",
-    description: "Description 8",
-    price: "800",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 9,
-    title: "Title 9",
-    description: "Description 9",
-    price: "900",
-    image: "https://picsum.photos/200/300",
-  },
-  {
-    id: 10,
-    title: "Title 10",
-    description: "Description 10",
-    price: "1000",
-    image: "https://picsum.photos/200/300",
-  },
-];
-const FeedListings = ({ navigation }) => {
-  const [listings, setListings] = useState(dummyData);
+const FeedListings = ({ navigation, route }) => {
+
+   const [listings] = useState(route.params.data || '');
+
+   console.log("jjj",route.params.data)
+
+  const handleBuy = async (uid, price) => {
+    
+    const storedValueString = await SecureStore.getItemAsync("data");
+    const value = JSON.parse(storedValueString || '{}');
+
+    const dataRef = ref(getDatabase(), `/users/${uid}/Item-Sold`);
+    const snapshot = await get(dataRef);
+    const val = snapshot.val();
+
+    const date = new Date();
+    const currentTime = date.getTime();
+    const itemSold = {
+      date: val && val.date ? [...val.date, currentTime] : [currentTime],
+      price: val && val.price ? [...val.price, price] : [price],
+    };
+
+    await set(dataRef, itemSold);
+
+
+    // const dataRef1 = ref(getDatabase(), `/users/Medical-Item`);
+    // const snapshot1 = await get(dataRef1);
+    // const val1 = snapshot1.val();   
+
+    // const removeData = val1.filter((item)=>{
+    //   if (item.id === id){
+    //     ("hhh")
+    //     return false
+    //   }
+    //   return true
+    // })
+
+
+    // await set(dataRef1, removeData); // Push the new object directly to Firebase
+
+    // Alert.alert("Sold...")
+
+  }
+
   return (
     <AppScreen>
       <View style={styles.mainContainer}>
         <AppHeader isGoBack={true} onPress={() => navigation.goBack()} />
         <Text style={styles.title}>Feed Listings</Text>
-        <FlatList
+        {listings ? 
+        (
+          <FlatList
           data={listings}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <FeedListingCard
-              title={item.title}
+              title={item.name}
               price={item.price}
-              owner="Ahsan Feeds"
-              image={require("../../../../assets/icons/feeding.png")}
-              onPress={() => Alert.alert("Getting Stripe Payment")}
+              owner={item.store}
+              image={item.images || require("../../../../assets/icons/feeding.png" )}
+              onPress={()=> handleBuy(item.id, item.price)}
             />
           )}
         />
+        ) : 
+        (
+        <Text style={styles.title}>No Item</Text>
+        )}
+        
       </View>
     </AppScreen>
   );

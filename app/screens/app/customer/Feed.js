@@ -3,6 +3,7 @@ import React from "react";
 import AppScreen from "../../../components/AppScreen";
 import CustomerHomeCard from "../../../components/customer/CustomerHomeCard";
 import AppHeader from "../../../components/AppHeader";
+import { getDatabase, ref, get } from "firebase/database";
 
 // different kind of livestock feed
 
@@ -34,7 +35,35 @@ const feeds = [
   },
 ];
 
+
+
 const Feed = ({ navigation }) => {
+  const [products, setProduct] = React.useState([]);
+
+  React.useEffect(()=>{
+
+    
+    const addProd = async () => {
+      
+      // Path in the database where you want to set the data
+      const dataRef = ref(getDatabase(), `/users/Feed-Item`);
+      const snapshot = await get(dataRef);
+      
+      if (snapshot.exists()) {
+        const val = snapshot.val(); 
+        (val)
+        setProduct(val);
+      } else {
+        // Handle the case where the snapshot doesn't exist or is empty
+        setProduct([]);
+      }
+  
+    }
+  
+    addProd()
+  
+  }, [])
+
   return (
     <AppScreen>
       <View style={{ flex: 1 }}>
@@ -47,37 +76,37 @@ const Feed = ({ navigation }) => {
               source={require("../../../../assets/icons/cow.png")}
               title="Cattle Feed"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Cattle Feed"]})}
             />
             <CustomerHomeCard
               source={require("../../../../assets/icons/chicken.png")}
               title="Poultry Feed"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Poultry Feed"]})}
             />
             <CustomerHomeCard
               source={require("../../../../assets/icons/fish.png")}
               title="Fish Feed"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Fish Feed"]})}
             />
             <CustomerHomeCard
               source={require("../../../../assets/icons/petf.png")}
               title="Pet Food"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Pet Food"]})}
             />
             <CustomerHomeCard
               source={require("../../../../assets/icons/horse.png")}
               title="Horse Feed"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Horse Feed"]})}
             />
             <CustomerHomeCard
               source={require("../../../../assets/icons/sheep.png")}
               title="Sheep Feed"
               marginVertical
-              onPress={() => navigation.navigate("sfeedlistings")}
+              onPress={() => navigation.navigate("sfeedlistings",{data: products["Sheep Feed"]})}
             />
           </View>
         </ScrollView>

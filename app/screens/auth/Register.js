@@ -1,16 +1,18 @@
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, {useState} from "react";
 import {
   AppForm,
   AppFormDropDown,
   AppFormField,
   SubmitButton,
 } from "../../components/form/index";
-
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import * as yup from "yup";
 import AppScreen from "../../components/AppScreen";
 import AppHeader from "../../components/AppHeader";
 import { COLORS, FONTS } from "../../constants/theme";
+import {auth} from "../../../firebase"
+import { getDatabase, ref, set } from "firebase/database";
 
 const userType = [
   {
@@ -35,29 +37,65 @@ const userType = [
   },
 ];
 
-const initialValues = {
-  name: "",
-  email: "",
-  cnic: "",
-  accountType: "",
-  password: "",
-  confirmPassword: "",
-};
-
-const validationSchema = yup.object().shape({
-  fullName: yup.string().required().label("Full Name"),
-  email: yup.string().required().label("Email"),
-  cnic: yup.string().required().label("CNIC"),
-  accountType: yup.object().required().label("Account Type"),
-  password: yup.string().required().label("Password"),
-  //confirm password must be same as password
-  confirmPassword: yup
-    .string()
-    .required()
-    .oneOf([yup.ref("password"), null], "Passwords must match"),
-});
-
 const Register = ({ navigation }) => {
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [pass, setPassword] = useState('')
+  const [cnic, setCnic] = useState('')
+  const [number, setNumber] = useState('')
+  const [type, setType] = useState('')
+  const [confirmPassword, setconfirmPassword] = useState('')
+
+  const initialValues = {
+    name: name,
+    email: email,
+    cnic: cnic,
+    number: number,
+    accountType: type.name,
+    password: pass,
+    confirmPassword: confirmPassword,
+  };
+  
+  
+  const validationSchema = yup.object().shape({
+    fullName: yup.string().required().label("Full Name"),
+    email: yup.string().required().label("Email"),
+    cnic: yup.string().required().label("CNIC"),
+    accountType: yup.object().required().label("Account Type"),
+    password: yup.string().required().label("Password"),
+    //confirm password must be same as password
+    confirmPassword: yup
+      .string()
+      .required()
+      .oneOf([yup.ref("password"), null], "Passwords must match"),
+  });
+
+
+  const registerUser = () => {
+
+    createUserWithEmailAndPassword(auth, email, pass).
+
+      then(async (res) => {
+        
+        const key = "data"
+        
+        // Path in the database where you want to set the data
+        const dataRef = ref(getDatabase(), `/users/${res['user']['uid']}`); // Ensure the correct path
+        // Set data at the specified path
+        await set(dataRef, initialValues);
+
+        navigation.navigate("login")
+
+        // navigation.navigate('login')
+      }).catch((error) => {
+        (error)
+
+      })
+
+
+  }
+  
   return (
     <AppScreen>
       <View style={{ flex: 1 }}>
@@ -68,7 +106,6 @@ const Register = ({ navigation }) => {
               <AppForm
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => navigation.navigate("otp")}
               >
                 <Text style={styles.phoneNumber}>Full Name</Text>
                 <AppFormField
@@ -76,6 +113,7 @@ const Register = ({ navigation }) => {
                   placeholder="Olivia Price"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  onChangeText = {setName}
                 />
                 <Text style={styles.phoneNumber}>Email</Text>
                 <AppFormField
@@ -83,6 +121,7 @@ const Register = ({ navigation }) => {
                   placeholder="olivia@gmail.com"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  onChangeText = {setEmail}
                 />
                 <Text style={styles.phoneNumber}>CNIC Number</Text>
                 <AppFormField
@@ -90,20 +129,23 @@ const Register = ({ navigation }) => {
                   placeholder="12345-1234567-1"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  onChangeText = {setCnic}
                 />
                 <Text style={styles.phoneNumber}>Phone Number</Text>
                 <AppFormField
                   name="phoneNumber"
-                  placeholder="your password..."
+                  placeholder="your Phone Number..."
                   autoCapitalize="none"
                   autoCorrect={false}
-                  secureTextEntry
+                  onChangeText = {setNumber}
+                  // secureTextEntry
                 />
                 <Text style={styles.phoneNumber}>Account Type</Text>
                 <AppFormDropDown
                   name="accountType"
                   data={userType}
                   placeholder="Select User Category"
+                  setValue = {setType}
                 />
                 <Text style={styles.phoneNumber}>Password</Text>
                 <AppFormField
@@ -111,6 +153,7 @@ const Register = ({ navigation }) => {
                   placeholder="your password..."
                   autoCapitalize="none"
                   autoCorrect={false}
+                  onChangeText = {setPassword}
                   secureTextEntry
                 />
                 <Text style={styles.phoneNumber}>Confirm Password</Text>
@@ -120,16 +163,17 @@ const Register = ({ navigation }) => {
                   autoCapitalize="none"
                   autoCorrect={false}
                   secureTextEntry
+                  onChangeText = {setconfirmPassword}
                 />
 
                 <View style={styles.submitBtn}>
-                  <SubmitButton title="Continue" />
+                  <SubmitButton title="Continue" onPress={registerUser} />
                 </View>
               </AppForm>
 
               <View style={styles.absoluteContainer}>
                 <Text
-                  onPress={() => navigation.navigate("contact")}
+                  
                   style={styles.worker}
                 >
                   Contact Us!
@@ -142,6 +186,7 @@ const Register = ({ navigation }) => {
     </AppScreen>
   );
 };
+
 
 export default Register;
 

@@ -3,10 +3,11 @@ import React from "react";
 import AppScreen from "../../../components/AppScreen";
 import AppHeader from "../../../components/AppHeader";
 import { COLORS } from "../../../constants/theme";
-
+import { getDatabase, ref, get, onValue, set, off } from "firebase/database";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as SecureStore from 'expo-secure-store';
 
-const dummyMessages = [
+const dummyMessages =  [
   {
     id: 1,
     message: "Hello",
@@ -44,20 +45,50 @@ const dummyMessages = [
   },
 ];
 
-const DirectMessageScreen = ({ navigation }) => {
+ 
+
+
+const DirectMessageScreen = ({ navigation, route }) => {
   const [text, setText] = React.useState("");
   const [messages, setMessages] = React.useState(dummyMessages);
 
-  const handleSendMessage = () => {
-    if (text === "") return;
-    const newMessage = {
-      id: messages.length + 1,
-      message: text,
-      isMine: true,
+
+  React.useEffect(() => {
+    const chatRef = ref(getDatabase(), `/users/chats`);
+
+    const handleData = (snapshot) => {
+      const messages = snapshot.val() || [];
+      setMessages(messages);
     };
+
+    onValue(chatRef, handleData);
+
+    return () => {
+      off(chatRef, 'value', handleData);
+    };
+  }, []);
+
+  const handleSendMessage = async () => {
+
+    const storedValueString = await SecureStore.getItemAsync("data");
+    const value = JSON.parse(storedValueString || '{}');
+
+    if (text.trim() === '') return;
+
+    const chatRef = ref(getDatabase(), `/users/chats`);
+    const newMessage = {
+      senderId: value.uid,
+      receiverId: route.params.uid,
+      message: text,
+      timestamp: Date.now(),
+    };
+
+    // Push the new object directly to Firebase
+    await set(chatRef, newMessage);
     setMessages([...messages, newMessage]);
     setText("");
   };
+
 
   return (
     <AppScreen>

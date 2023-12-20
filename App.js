@@ -1,3 +1,4 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
@@ -6,10 +7,41 @@ import { useFonts } from "expo-font";
 import CustomerNavigator from "./app/navigations/customer/CustomerNavigator";
 import MedicalNavigator from "./app/navigations/medicalstore/MedicalNavigator";
 import FeedNavigator from "./app/navigations/feed/FeedNavigator";
-import FormOwnerNavigator from "./app/navigations/formowner/FormOwnerNavigator";
+import FarmOwnerNavigator from "./app/navigations/farmowner/farmOwnerNavigator";
+import VeterinaryNavigator from "./app/navigations/veterinaryDoctor/veterinaryNavigator";
+import * as SecureStore from 'expo-secure-store';
+
+const AuthContext = React.createContext();
 
 export default function App() {
-  const user = "customer";
+
+
+  const initialState = {
+    type: '' // Set a default value or appropriate initial state
+  };
+  
+  const reducer = (state, action) => {
+    return {
+      type: action.type
+    };
+  };
+  
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+
+  React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      try {
+        const storedValueString = await SecureStore.removeItemAsync("data");
+        const value = JSON.parse(storedValueString || '{}'); // Ensure value is initialized
+        (value);
+        dispatch({ type: value.type || '' }); // Provide a default value if type is not present
+      } catch (e) {
+        // Handle error
+      }
+    };
+    bootstrapAsync();
+  }, []);
+
   const [fontsLoaded] = useFonts({
     EncodeSansBold: require("./assets/fonts/Poppins-Bold.ttf"),
     EncodeSansBoldItalic: require("./assets/fonts/Poppins-BoldItalic.ttf"),
@@ -24,13 +56,33 @@ export default function App() {
 
   if (!fontsLoaded) return null;
   return (
-    <NavigationContainer>
-      <StatusBar style="auto" />
-      {/* <AuthNavigator /> */}
-      {/* <CustomerNavigator /> */}
-      <MedicalNavigator />
-      {/* <FeedNavigator /> */}
-      {/* <FormOwnerNavigator /> */}
-    </NavigationContainer>
+
+    <AuthContext.Provider value={{}} >
+      <NavigationContainer>
+        <StatusBar style="auto" />
+        
+        {/* {state.type === "Farm Owner" ? (
+          <FormOwnerNavigator />
+        ) : state.type === "Customer" ? (
+          <CustomerNavigator />
+        ) : state.type === "Medical Store" ? (
+          <MedicalNavigator />
+        ) : state.type === "Feed Store" ? (
+          <FeedNavigator /> 
+        ) :
+        ( <AuthNavigator /> )
+        } */}
+        
+        {/* <AuthNavigator />  */}
+
+
+        {/* <FarmOwnerNavigator /> */}
+        {/* <CustomerNavigator /> */}
+        <VeterinaryNavigator />
+        {/* <MedicalNavigator /> */}
+        {/* <FeedNavigator />  */}
+      </NavigationContainer>
+    </AuthContext.Provider>
+  
   );
 }

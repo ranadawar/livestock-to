@@ -47,7 +47,6 @@ const DropDown = ({
                 onPress={() => {
                   onSelectItem(item);
                   setShowOption(false);
-                  console.log("selected item", item);
                 }}
               >
                 <View style={styles.container}>

@@ -1,23 +1,41 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { ScrollView, StyleSheet, Text, View, Alert } from "react-native";
+import React, {useState} from "react";
 
 import * as yup from "yup";
 import AppScreen from "../../../components/AppScreen";
 import AppHeader from "../../../components/AppHeader";
 import FormImagePicker from "../../../components/form/FormImagePicker";
-import { AppForm, AppFormField, SubmitButton } from "../../../components/form";
+import { AppForm, AppFormField, SubmitButton, AppFormDropDown } from "../../../components/form";
 import { FONTS } from "../../../constants/theme";
+import * as SecureStore from 'expo-secure-store';
+import { getDatabase, ref, set, get } from "firebase/database";
 
-const initialValues = {
-  name: "",
-  description: "",
-  price: "",
-  quantity: "",
-  images: [],
-  category: "",
-  subCategory: "",
-  brand: "",
-};
+const CategoryList = [
+  {
+    id: 1,
+    name: "Cattle Feed",
+  },
+  {
+    id: 2,
+    name: "Poultry Feed",
+  },
+  {
+    id: 3,
+    name: "Fish Feed",
+  },
+  {
+    id: 4,
+    name: "Pet Food",
+  },
+  {
+    id: 5,
+    name: "Horse Feed",
+  },
+  {
+    id: 6,
+    name: "Sheep Feed",
+  },
+];
 
 const validationSchema = yup.object().shape({
   name: yup.string().required().min(1).label("Name"),
@@ -31,6 +49,107 @@ const validationSchema = yup.object().shape({
 });
 
 const AddProduct = ({ navigation }) => {
+
+  const [name, setName] = useState('');
+  const [image, setImage] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
+  const [brand, setBrand] = useState('');
+  const [Store, setStores] = React.useState({});
+  const [index, setStoreIndex] = React.useState({})
+
+  React.useEffect(()=>{
+    const getStore = async () => {
+
+      const storedValueString = await SecureStore.getItemAsync("data");
+      const value = JSON.parse(storedValueString || '{}');
+      
+      // Path in the database where you want to set the data
+      const dataRef = ref(getDatabase(), `/users/${value.uid}/Feed-Store`);
+      const snapshot = await get(dataRef);
+      
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        const KeysArray = Object.keys(val || {}); // Ensure val is not null or undefined      
+        const valuesArray = Object.values(val || {}); // Ensure val is not null or undefined
+
+        var storeDic = {};
+        KeysArray.map((item, index)=>{
+          storeDic["index"] = item;
+          storeDic["name"] = valuesArray[index].storeName;
+          storeDic["id"] = Math.floor(Math.random() * 10000000);
+        })  
+        setStores([storeDic]);
+      } else {
+        // Handle the case where the snapshot doesn't exist or is empty
+        setStores([]);
+      }
+    }
+    getStore()
+  }, [])
+
+  function generateToken(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < length; i++) {
+      token += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+
+    return token;
+  }
+
+  let initialValues = {
+    id : generateToken(3),
+    name: name,
+    description: description,
+    price: price,
+    quantity: quantity,
+    images: image,
+    category: category,
+    subCategory: subCategory,
+    brand: brand,
+  };
+
+  const addProd = async () => {
+    
+    const storedValueString = await SecureStore.getItemAsync("data");
+    const value = JSON.parse(storedValueString || '{}');
+    
+    // Path in the database where you want to set the data
+    const dataRef = ref(getDatabase(), `/users/${value.uid}/Feed-Store/${index.index}/products`);
+
+    // Retrieve existing data
+    const snapshot = await get(dataRef);
+    let existingData = snapshot.val() || []; // Default to an empty array if no data exists
+
+    initialValues['store'] = index.name;
+    // Push the new object to the existing array
+    existingData.push(initialValues);
+
+    // Update the data at the specified path
+    await set(dataRef, existingData); // Push the new object directly to Firebase
+
+
+    const dataRef1 = ref(getDatabase(), `/users/Feed-Item/${category.name}`);
+    const snapshot1 = await get(dataRef);
+    let existingData1 = snapshot1.val() || []; // Default to an empty array if no data exists
+
+    initialValues['uid'] = index.uid;
+    // Push the new object to the existing array
+    existingData1.push(initialValues);
+
+    // Update the data at the specified path
+    await set(dataRef1, existingData1);
+
+    Alert.alert("Product Added")
+    navigation.navigate("shome")
+
+}
+
+
   return (
     <AppScreen>
       <View style={{ flex: 1, marginHorizontal: 20 }}>
@@ -41,20 +160,30 @@ const AddProduct = ({ navigation }) => {
             <AppForm
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={() => console.log("sub")}
+              onSubmit={() => ("sub")}
             >
-              <FormImagePicker name="images" />
-              <AppFormField name="name" placeholder="Name" />
-              <AppFormField name="description" placeholder="Description" />
-              <AppFormField name="price" placeholder="Price" />
-              <AppFormField name="quantity" placeholder="Quantity" />
-
-              <AppFormField name="category" placeholder="Category" />
-              <AppFormField name="subCategory" placeholder="Sub Category" />
-              <AppFormField name="brand" placeholder="Brand" />
+                <FormImagePicker name="images" onPress={setImage} />
+                {/* <AppFormDropDown
+                  name="storeName"
+                  data={CategoryList}
+                  placeholder="Select Store"
+                  setValue = {setStoreIndex}
+                /> */}
+                <AppFormField name="name" placeholder="Name" onChangeText={setName} />
+                <AppFormField name="description" placeholder="Description" onChangeText={setDescription} />
+                <AppFormField name="price" placeholder="Price" onChangeText={setPrice} />
+                <AppFormField name="quantity" placeholder="Quantity" onChangeText={setQuantity} />
+                <AppFormDropDown
+                  name="category"
+                  data={CategoryList}
+                  placeholder="Select Category"
+                  setValue = {setCategory}
+                />
+                <AppFormField name="subCategory" placeholder="Sub Category" onChangeText={setSubCategory} />
+                <AppFormField name="brand" placeholder="Brand" onChangeText={setBrand} />
 
               <View style={{ height: 20 }} />
-              <SubmitButton title="Add Product" />
+              <SubmitButton title="Add Product" onPress={addProd} />
             </AppForm>
           </View>
         </ScrollView>

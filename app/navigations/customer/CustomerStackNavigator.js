@@ -13,6 +13,9 @@ import Vet from "../../screens/app/customer/Vet";
 import VetChat from "../../screens/app/customer/VetChat";
 import VetProfile from "../../screens/app/customer/VetProfile";
 import Medical from "../../screens/app/customer/Medical";
+import RequestAppointment from "../../screens/app/customer/RequestAppointment";
+import RequestAppointmentOwner from "../../screens/app/customer/RequestAppointmentOwner";
+import MessagesScreenBot from "../../screens/app/customer/MessagesScreenBot";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +37,9 @@ const CustomerStackNavigator = () => {
       <Stack.Screen name="svetprofile" component={VetProfile} />
 
       <Stack.Screen name="smedical" component={Medical} />
+      <Stack.Screen name="sappoint" component={RequestAppointment} />
+      <Stack.Screen name="sappointowner" component={RequestAppointmentOwner} />
+      <Stack.Screen name="sbot" component={MessagesScreenBot} />
     </Stack.Navigator>
   );
 };

@@ -4,61 +4,54 @@ import AppScreen from "../../../components/AppScreen";
 import { COLORS, FONTS } from "../../../constants/theme";
 import ProfileCard from "../../../components/ProfileCard";
 import AppHeader from "../../../components/AppHeader";
+import { getDatabase, ref, get } from "firebase/database";
 
-const vets = [
-  {
-    id: 1,
-    name: "Dr. John Doe",
-    address: "123, xyz street, abc city",
-    phone: "1234567890",
-    email: "",
-  },
-  //write 10 more objects from 2 to 11 like the above using copilot
+const Vet = ({ navigation,route }) => {
 
-  {
-    id: 2,
-    name: "Dr. John Doe",
-    address: "123, xyz street, abc city",
-    phone: "1234567890",
-  },
-  {
-    id: 3,
-  },
-  {
-    id: 4,
-  },
-  {
-    id: 5,
-  },
-  {
-    id: 6,
-  },
-  {
-    id: 7,
-  },
-  {
-    id: 634,
-  },
-  {
-    id: 64324,
-  },
-  {
-    id: 6432,
-  },
-];
+  const [vets, setVet] = React.useState('')
 
-const Vet = ({ navigation }) => {
+
+  React.useEffect(()=>{
+
+    
+    const addProd = async () => {
+      let dataRef;
+      // Path in the database where you want to set the data
+      if (route.params.data === "Doctor"){
+        dataRef = ref(getDatabase(), `/users/Doctors`);
+      }
+      else{
+        dataRef = ref(getDatabase(), `/users/Owner`);
+      }
+
+      const snapshot = await get(dataRef);
+      
+      if (snapshot.exists()) {
+        const val = snapshot.val(); 
+        setVet(val);
+      } else {
+        // Handle the case where the snapshot doesn't exist or is empty
+        setVet([]);
+      }
+
+    }
+
+    addProd()
+
+  }, [])
+
+
   return (
     <AppScreen>
       <AppHeader isGoBack onPress={() => navigation.goBack()} />
       <View style={styles.mainContainer}>
-        <Text style={styles.title}>Vterinary Doctors</Text>
+        <Text style={styles.title}>Vterinary {route.params.data}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={vets}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <ProfileCard onPress={() => navigation.navigate("svetprofile")} />
+            <ProfileCard name = {item.name} imagePerson = {item.imagePerson} type = {route.params.data}  onPress={() => {route.params.data === "Doctor" ? navigation.navigate("sappoint") : navigation.navigate("sappointowner")}} />
           )}
         />
       </View>

@@ -2,14 +2,14 @@ import React from "react";
 import { useFormikContext } from "formik";
 import DropDown from "../DropDown";
 import ErrorMessage from "../ErrorMessage";
-const AppFormDropdown = ({ data, placeholder = "Select Item", name }) => {
+const AppFormDropdown = ({ data, placeholder = "Select Item", name, setValue }) => {
   const { errors, setFieldValue, touched, values } = useFormikContext();
   return (
     <>
       <DropDown
         data={data}
         placeholder={placeholder}
-        onSelectItem={(item) => setFieldValue(name, item)}
+        onSelectItem={(item) => {setFieldValue(name, item),setValue(item)}}
         value={values[name]}
         selectedItem={values[name]}
       />

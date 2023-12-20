@@ -33,13 +33,21 @@ const Home = ({ navigation }) => {
               title="Veterinary Doctor"
               source={require("../../../../assets/icons/vet.png")}
               mRight={10}
-              onPress={() => navigation.navigate("svet")}
+              onPress={() => navigation.navigate("svet",{data: "Doctor"})}
             />
             <CustomerHomeCard
               title="Medical Store"
               source={require("../../../../assets/icons/med.png")}
               mLeft={10}
               onPress={() => navigation.navigate("smedical")}
+            />
+          </View>
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+              title="Farm Owner"
+              source={require("../../../../assets/icons/farmer.png")}
+              mRight={10}
+              onPress={() => navigation.navigate("svet",{data: "Farm Owner"})}
             />
           </View>
           <View style={styles.cardsContainer}>

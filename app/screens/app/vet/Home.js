@@ -1,14 +1,55 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Home = () => {
+import CustomerHomeCard from "../../../components/customer/CustomerHomeCard";
+import AppHeader from "../../../components/AppHeader";
+import { COLORS, FONTS } from "../../../constants/theme";
+import AppScreen from "../../../components/AppScreen";
+
+const Home = ({ navigation }) => {
   return (
-    <View>
-      <Text>Home</Text>
-    </View>
+    <AppScreen>
+      <View style={{ flex: 1 }}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <AppHeader />
+          <Text style={styles.title}>Livestock Pro's Doctor!</Text>
+
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+              title="Set Doctor"
+              source={require("../../../../assets/icons/medicalstores.png")}
+              mRight={10}
+              onPress={() => navigation.navigate("ssetstore")}
+            />
+          </View>
+          <View style={styles.cardsContainer}>
+            <CustomerHomeCard
+              title="All Appointment Requests"
+              source={require("../../../../assets/icons/medicine.png")}
+              mLeft={10}
+              onPress={() => navigation.navigate("sallproducts")}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </AppScreen>
   );
 };
 
 export default Home;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  cardsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 20,
+    marginHorizontal: 20,
+    marginTop: 35,
+  },
+  title: {
+    fontSize: 24,
+    textAlign: "center",
+    fontFamily: FONTS.semiBold,
+    color: COLORS.primary,
+  },
+});

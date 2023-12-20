@@ -6,24 +6,28 @@ const InboxCard = ({
   person = require("../../assets/images/vetdoc.jpg"),
   name = "Jonath",
   message = "I want to buy you milk",
-  time = "1 Month Ago",
   messageImage = require("../../assets/images/vetdoc.jpg"),
+  date,
+  start,
+  end,
+  onPress,
+
 }) => {
+  
+  console.log(name)
   return (
-    <TouchableOpacity style={styles.mainContainer}>
+    <TouchableOpacity style={styles.mainContainer} onPress={onPress} >
       <Image source={person} resizeMode="cover" style={styles.personImage} />
       <View style={styles.middleContainer}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.message}>{message}</Text>
       </View>
       <View>
-        <Image
-          source={messageImage}
-          resizeMode="cover"
-          style={styles.messageImage}
-        />
+        
         <View style={styles.timeContainer}>
-          <Text style={styles.time}>{time}</Text>
+          <Text style={styles.time}>{date.split(' ').slice(0, 4).join(' ')}</Text>
+          <Text style={styles.time}>From {start}</Text>
+          <Text style={styles.time}>Till {end}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -71,10 +75,11 @@ const styles = StyleSheet.create({
   timeContainer: {
     backgroundColor: "#E9E9E9",
     position: "absolute",
-    width: 100,
+    width: 110,
     justifyContent: "center",
     alignItems: "center",
-    left: -90,
+    left: -100,
+    bottom:-30,
     padding: 3,
     borderRadius: 29,
   },

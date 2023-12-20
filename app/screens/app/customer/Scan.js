@@ -21,9 +21,9 @@ const Scan = ({ navigation }) => {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     setId(data);
-    console.log("The id is ", id);
+    ("The id is ", id);
     if (data) {
-      console.log("The data is ", data);
+      ("The data is ", data);
     }
   };
   if (hasPermission === null) {

@@ -1,6 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import PaymentScreen from "../PaymentScreen";
 
 const FeedListingCard = ({
   image = require("../../../assets/icons/milk.png"),
@@ -8,6 +10,7 @@ const FeedListingCard = ({
   title,
   owner = "Ahsan Dairy",
   onPress,
+  
 }) => {
   return (
     <View style={styles.mainContainer}>
@@ -15,20 +18,25 @@ const FeedListingCard = ({
       <View style={styles.middleContainer}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.price}>{price}</Text>
-        <View style={styles.ownerContainer}>
+        {/* <View style={styles.ownerContainer}>
           <Text style={styles.normal}>Listed By:</Text>
           <Text
-            onPress={() => navigation.navigte("sListingOwner")}
             style={styles.green}
           >
             {owner}
           </Text>
-        </View>
+        </View> */}
       </View>
-
-      <TouchableOpacity onPress={onPress} style={styles.buyNow}>
+      <StripeProvider
+          publishableKey="pk_test_51IdYnDBHMKBszX1pBFaa67mnlpgrqh7Dw839OaPD429x69Ss3jdSEutSjOQdRmatWmdpGzYgD1TsVct4Y57tScap00kD1Hxezb"
+          urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
+        >
+          <PaymentScreen amount={price} onPress={onPress} />
+      </StripeProvider>
+      {/* <TouchableOpacity onPress={onPress} style={styles.buyNow}>
         <Text style={styles.buyText}>Buy Now</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      
     </View>
   );
 };

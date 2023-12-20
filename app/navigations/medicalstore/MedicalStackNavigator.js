@@ -6,6 +6,7 @@ import Home from "../../screens/app/medicalstore/Home";
 import SetStore from "../../screens/app/medicalstore/SetStore";
 import AddProduct from "../../screens/app/medicalstore/AddProduct";
 import AllProducts from "../../screens/app/medicalstore/AllProducts";
+import AllProductsVerify from "../../screens/app/medicalstore/VerifyProduct";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ const MedicalStackNavigator = () => {
       <Stack.Screen name="ssetstore" component={SetStore} />
       <Stack.Screen name="saddproduct" component={AddProduct} />
       <Stack.Screen name="sallproducts" component={AllProducts} />
+      <Stack.Screen name="sallproductsverify" component={AllProductsVerify} />
     </Stack.Navigator>
   );
 };
